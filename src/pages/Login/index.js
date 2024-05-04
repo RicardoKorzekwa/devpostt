@@ -1,12 +1,15 @@
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useState, useContext } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import { Button, ButtonText, Container, Input, SignUpButton, SignUpText, Title } from "./styles";
+
+import { AuthContext } from "../../contexts/auth";
 
 export default function Login(){
     const [login, setLogin] = useState(true);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { signUp, signIn, loadingAuth } = useContext(AuthContext);
 
     function toggleLogin(){
         setLogin(!login);
@@ -15,22 +18,22 @@ export default function Login(){
         setPassword("");
     }
 
-    function handleSignIn(){
+    async function handleSignIn(){
         if(email === '' || password === ''){
             console.log("Preencha todos os campos");
             return;
         }
 
-        // Fazer o Login do usuario
+        await signIn(email, password);
     }
 
-    function handleSignUp(){
+    async function handleSignUp(){
         if(name === '' || email === '' || password === ''){
             console.log("Preencha todos os campos para cadastrar");
             return;
         }
         
-        //Cadastrar no app
+        await signUp(email, password, name);
     }
 
     if(login){
@@ -52,7 +55,8 @@ export default function Login(){
                 />
     
                 <Button onPress={handleSignIn}>
-                    <ButtonText>Acessar</ButtonText>
+                    {!loadingAuth ? <ButtonText>Acessar</ButtonText> : <ButtonText><ActivityIndicator size={20} color="#FFF"/></ButtonText>}
+                    
                 </Button>
     
                 <SignUpButton onPress={toggleLogin}>
@@ -87,7 +91,7 @@ export default function Login(){
             />
 
             <Button onPress={handleSignUp}>
-                <ButtonText>Cadastrar</ButtonText>
+            {!loadingAuth ? <ButtonText>Cadastrar</ButtonText> : <ButtonText><ActivityIndicator size={20} color="#FFF"/></ButtonText>}
             </Button>
 
             <SignUpButton onPress={toggleLogin}>
